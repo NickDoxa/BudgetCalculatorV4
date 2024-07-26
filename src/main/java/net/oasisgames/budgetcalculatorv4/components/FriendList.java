@@ -5,20 +5,18 @@ import lombok.Data;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.util.List;
 
 @Component
 @Scope("prototype")
 @Entity
 @Data
-@Table(name = "budget_report")
-public class BudgetReport {
+@Table(name = "friend_list")
+public class FriendList {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String username;
-    private String report;
-    private Date date_created;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<BudgetUser> friends;
 
 }

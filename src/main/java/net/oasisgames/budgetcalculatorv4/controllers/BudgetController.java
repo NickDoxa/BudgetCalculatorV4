@@ -1,9 +1,6 @@
 package net.oasisgames.budgetcalculatorv4.controllers;
 
-import net.oasisgames.budgetcalculatorv4.components.BudgetInformationDTO;
-import net.oasisgames.budgetcalculatorv4.components.BudgetInputDTO;
-import net.oasisgames.budgetcalculatorv4.components.BudgetReportDTO;
-import net.oasisgames.budgetcalculatorv4.components.BudgetUserDTO;
+import net.oasisgames.budgetcalculatorv4.components.*;
 import net.oasisgames.budgetcalculatorv4.services.BudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -85,6 +82,27 @@ public class BudgetController {
     @PostMapping("new_user")
     public BudgetUserDTO createNewUser(@RequestBody BudgetUserDTO budgetUserDTO) {
         return budgetService.createNewUser(budgetUserDTO);
+    }
+
+    /**
+     * Post mapping for adding a new friend
+     * @param user the user adding a friend
+     * @param friend_username the user to add to the friend list
+     * @return Friend List Data Transfer Object (DTO) with updated list of friends
+     */
+    @PostMapping("friends/add")
+    public FriendListDTO addFriend(String user, String friend_username) {
+        return budgetService.addFriend(user, friend_username);
+    }
+
+    /**
+     * Get mapping for all of a users friends
+     * @param user the user to get the friend list from
+     * @return Friend List Data Transfer Object (DTO) of the users friends
+     */
+    @GetMapping("friends/all")
+    public FriendListDTO getFriends(@RequestBody BudgetUserDTO user) {
+        return budgetService.getFriends(user);
     }
 
     /**

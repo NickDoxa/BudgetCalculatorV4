@@ -1,20 +1,16 @@
 package net.oasisgames.budgetcalculatorv4.components;
 
-import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Scope("prototype")
-@Entity
 @Data
-@Table(name = "budget_user")
-public class BudgetUser {
+public class FriendListDTO {
 
-    @Id
-    private String username;
-    private int age;
-    private double salary;
+    private List<BudgetUserDTO> friends;
 
 }

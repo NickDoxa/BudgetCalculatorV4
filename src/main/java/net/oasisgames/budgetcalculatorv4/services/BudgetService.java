@@ -3,13 +3,11 @@ package net.oasisgames.budgetcalculatorv4.services;
 import lombok.Getter;
 import net.oasisgames.budgetcalculatorv4.BudgetCalculatorV4Application;
 import net.oasisgames.budgetcalculatorv4.components.*;
-import net.oasisgames.budgetcalculatorv4.repository.BudgetMapper;
-import net.oasisgames.budgetcalculatorv4.repository.InformationRepository;
-import net.oasisgames.budgetcalculatorv4.repository.ReportRepository;
-import net.oasisgames.budgetcalculatorv4.repository.UserRepository;
+import net.oasisgames.budgetcalculatorv4.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,10 +22,12 @@ public class BudgetService {
     public BudgetService(InformationRepository infoRepository,
                          UserRepository userRepository,
                          ReportRepository reportRepository,
+                         FriendRepository friendRepository,
                          Calculate calculate, BudgetMapper mapper) {
         this.infoRepository = infoRepository;
         this.userRepository = userRepository;
         this.reportRepository = reportRepository;
+        this.friendRepository = friendRepository;
         this.calculate = calculate;
         this.mapper = mapper;
     }
@@ -35,6 +35,7 @@ public class BudgetService {
     private final InformationRepository infoRepository;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
+    private final FriendRepository friendRepository;
     private final Calculate calculate;
     private final BudgetMapper mapper;
 
@@ -66,8 +67,6 @@ public class BudgetService {
                 Calculate.formatToCurrency(remainder);
         BudgetReport report = createBudgetReport(input.getUsername(), final_report);
         info.setReport(report);
-        report.setId(info.getReport().getId());
-        getReportRepository().save(report);
         getInfoRepository().save(info);
         return mapper.reportToDTO(report);
     }
@@ -138,6 +137,37 @@ public class BudgetService {
     public BudgetReportDTO getLastBudgetReport(String user) {
         return mapper.reportToDTO(getReportRepository()
                 .findUsersLastReport(user).orElse(null));
+    }
+
+    /**
+     * Adds the specific friend to the users friend list
+     * @param user the user adding a friend
+     * @param friend_username the user to add to the friend list
+     * @return Friend List Data Transfer Object (DTO) with updated list of friends
+     */
+    public FriendListDTO addFriend(String user, String friend_username) {
+        BudgetUser budgetUser = getUserRepository().findById(user).orElseThrow();
+        FriendList friends = getFriendRepository().findById(user).orElse(
+                BudgetCalculatorV4Application.getContext().getBean(FriendList.class));
+        List<BudgetUser> list = friends.getFriends() == null ?
+                new ArrayList<>() :
+                friends.getFriends();
+        list.add(getUserRepository().findById(friend_username).orElse(null));
+        friends.setFriends(list);
+        friends.setUsername(user);
+        getFriendRepository().save(friends);
+        return mapper.friendToDTO(getFriendRepository()
+                .findById(budgetUser.getUsername()).orElseThrow());
+    }
+
+    /**
+     * Gets all of a users friends
+     * @param user the user to get the friend list from
+     * @return Friend List Data Transfer Object (DTO) of the users friends
+     */
+    public FriendListDTO getFriends(BudgetUserDTO user) {
+        return mapper.friendToDTO(getFriendRepository()
+                .findById(user.getUsername()).orElseThrow());
     }
 
 }

@@ -19,6 +19,6 @@ public interface UserRepository extends JpaRepository<BudgetUser, String> {
     List<String> findAllUsernames();
     @Query("select bu.salary from BudgetUser bu " +
             "where bu.username=?1")
-    float findSalaryByUsername(String username);
+    double findSalaryByUsername(String username);
 
 }

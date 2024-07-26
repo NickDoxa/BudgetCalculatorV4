@@ -16,5 +16,7 @@ public interface BudgetMapper {
     BudgetUserDTO userToDTO(BudgetUser budgetUser);
     BudgetUser dtoToUser(BudgetUserDTO budgetUserDTO);
     BudgetReportDTO reportToDTO(BudgetReport budgetReport);
+    @Mapping(target = "FriendList.username", ignore = true)
+    FriendListDTO friendToDTO(FriendList friendList);
 
 }
