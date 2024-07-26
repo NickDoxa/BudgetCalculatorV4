@@ -12,6 +12,5 @@ public class BudgetInputDTO {
     private String username;
     private double[] monthlyExpenses;
     private double[] weeklyExpenses;
-    private double income;
 
 }

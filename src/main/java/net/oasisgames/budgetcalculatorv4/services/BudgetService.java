@@ -46,26 +46,29 @@ public class BudgetService {
      * @return Budget Report as a String
      */
     public BudgetReportDTO calculateBudgetReportAndSave(BudgetInputDTO input) {
+        double income = getUserRepository().findSalaryByUsername(input.getUsername());
         double remainder = calculate.calculateTotalRemainder(input.getMonthlyExpenses(),
-                input.getWeeklyExpenses(), input.getIncome());
-        double tax_percent = calculate.calculateFederalTax(input.getIncome());
-        double taxes_taken = input.getIncome() * tax_percent;
+                input.getWeeklyExpenses(), income);
+        double tax_percent = calculate.calculateFederalTax(income);
+        double taxes_taken = income * tax_percent;
         double expenses = calculate.calculateTotalExpenses(input.getMonthlyExpenses(),
                 input.getWeeklyExpenses());
         BudgetInformation info = mapper.inputDTOToInfo(input);
         info.setRemainder(remainder);
         info.setTaxes(taxes_taken);
         info.setExpenses(expenses);
-        String final_report = "Your gross income was " + Calculate.formatToCurrency(input.getIncome()) +
+        String final_report = "Your gross income was " + Calculate.formatToCurrency(income) +
                 ". After losing " + Calculate.formatToCurrency(taxes_taken) +
                 " to taxes, your income becomes " +
-                Calculate.formatToCurrency(input.getIncome() - taxes_taken) +
+                Calculate.formatToCurrency(income - taxes_taken) +
                 ". Your expenses add up to " + Calculate.formatToCurrency(expenses) +
                 ". This leaves you with a final remainder of " +
                 Calculate.formatToCurrency(remainder);
         BudgetReport report = createBudgetReport(input.getUsername(), final_report);
+        info.setReport(report);
+        report.setId(info.getReport().getId());
         getReportRepository().save(report);
-        getInfoRepository().saveInformation(info, report.getId());
+        getInfoRepository().save(info);
         return mapper.reportToDTO(report);
     }
 
@@ -77,7 +80,8 @@ public class BudgetService {
      */
     private BudgetReport createBudgetReport(String username,
                                             String string_report) {
-        BudgetReport report = BudgetCalculatorV4Application.getContext().getBean(BudgetReport.class);
+        BudgetReport report = BudgetCalculatorV4Application.getContext()
+                .getBean(BudgetReport.class);
         report.setUsername(username);
         report.setReport(string_report);
         report.setDate_created(new Date());

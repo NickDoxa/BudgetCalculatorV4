@@ -9,11 +9,14 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 @Entity
 @Data
+@Table(name = "budget_information")
 public class BudgetInformation {
 
     @Id
     private String username;
-    private Long report_id;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "report_id")
+    private BudgetReport report;
     private double remainder;
     private double expenses;
     private double taxes;

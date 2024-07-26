@@ -20,7 +20,7 @@ public interface ReportRepository extends JpaRepository<BudgetReport, Long> {
     List<BudgetReport> findBudgetReportsByUsername(String user);
     @Query("select report from BudgetReport report " +
             "inner join BudgetInformation info " +
-            "on info.report_id = report.id " +
+            "on info.report = report " +
             "where info.username=?1")
     Optional<BudgetReport> findUsersLastReport(String user);
 

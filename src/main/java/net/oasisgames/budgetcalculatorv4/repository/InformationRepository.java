@@ -10,11 +10,4 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @Scope("singleton")
-public interface InformationRepository extends JpaRepository<BudgetInformation, String> {
-
-    default void saveInformation(BudgetInformation information, Long id) {
-        information.setReport_id(id);
-        this.save(information);
-    }
-
-}
+public interface InformationRepository extends JpaRepository<BudgetInformation, String> {}
