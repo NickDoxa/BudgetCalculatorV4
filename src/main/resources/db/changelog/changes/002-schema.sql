@@ -1,0 +1,1 @@
+ALTER TABLE budget_report ALTER COLUMN report TYPE VARCHAR(250);
